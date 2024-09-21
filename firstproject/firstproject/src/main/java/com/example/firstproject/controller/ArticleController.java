@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -72,5 +73,20 @@ public class ArticleController {
         //뷰페이지 설정하기
 
         return "articles/edit";
+    }
+    @PostMapping("/articles/update")
+    public String update(ArticleForm form){
+        log.info(form.toString());
+        //dto를 엔티티로 변환하기
+        Article articleEntity=form.toEntity();
+        log.info(articleEntity.toString());
+        //엔티티를 db에 저장하기
+        Article target = articleRepository.findById(articleEntity.getId()).orElse(null);
+        if(target!=null){
+            articleRepository.save(articleEntity);
+        }
+
+        //수정 결과 페이지로 리다이렉트하기
+        return "redirect:/articles/" + articleEntity.getId();
     }
 }
